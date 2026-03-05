@@ -1,0 +1,1505 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FreeStore – Plataforma Libre de Apps</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:    #060a12;
+  --bg2:   #0b1220;
+  --bg3:   #101828;
+  --bg4:   #162035;
+  --accent:  #00e5ff;
+  --accent2: #7b2fff;
+  --accent3: #ff3d71;
+  --green:   #00ff88;
+  --gold:    #ffcc00;
+  --text:    #ddeeff;
+  --text2:   #6a7e99;
+  --text3:   #3d5066;
+  --border:  rgba(0,229,255,0.12);
+  --border2: rgba(255,255,255,0.06);
+  --card:    rgba(11,18,32,0.95);
+  --glow:    0 0 20px rgba(0,229,255,0.25);
+  --glow2:   0 0 20px rgba(123,47,255,0.3);
+  --glow3:   0 0 30px rgba(0,255,136,0.2);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Exo 2',sans-serif;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ── GRID BG ────────────────────────────────── */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(0,229,255,0.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,229,255,0.025) 1px,transparent 1px);
+  background-size:50px 50px;
+  pointer-events:none;z-index:0;
+  mask-image:radial-gradient(ellipse 100% 100% at 50% 0%,black 0%,transparent 80%);
+}
+
+/* ── SCROLLBAR ──────────────────────────────── */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:rgba(0,229,255,0.2);border-radius:3px}
+
+/* ── NAV ────────────────────────────────────── */
+nav{
+  position:sticky;top:0;z-index:200;
+  background:rgba(6,10,18,0.88);
+  backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--border);
+  padding:0 28px;
+  display:flex;align-items:center;gap:6px;
+  height:62px;
+}
+.logo{
+  display:flex;align-items:center;gap:10px;
+  font-family:'Rajdhani',sans-serif;
+  font-size:1.55rem;font-weight:700;
+  color:var(--accent);
+  text-shadow:var(--glow);
+  text-decoration:none;cursor:pointer;
+  flex-shrink:0;
+}
+.logo-icon{
+  width:34px;height:34px;
+  background:linear-gradient(135deg,var(--accent2),var(--accent));
+  border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;box-shadow:var(--glow2);
+  position:relative;
+}
+.logo-icon::after{content:'';position:absolute;inset:0;border-radius:9px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.15)}
+.logo span{color:var(--text)}
+
+.nav-links{display:flex;gap:2px;margin-left:10px}
+.nav-links a{
+  padding:6px 14px;border-radius:8px;
+  color:var(--text2);text-decoration:none;
+  font-size:0.88rem;font-weight:600;
+  transition:all 0.18s;cursor:pointer;
+  letter-spacing:0.3px;
+}
+.nav-links a:hover{background:rgba(0,229,255,0.07);color:var(--text)}
+.nav-links a.active{background:rgba(0,229,255,0.1);color:var(--accent)}
+
+.nav-search{
+  flex:1;max-width:360px;margin-left:auto;
+  position:relative;
+}
+.nav-search input{
+  width:100%;padding:8px 14px 8px 38px;
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:10px;
+  color:var(--text);
+  font-family:'Exo 2',sans-serif;font-size:0.88rem;
+  outline:none;transition:all 0.2s;
+}
+.nav-search input:focus{border-color:rgba(0,229,255,0.5);box-shadow:var(--glow)}
+.nav-search input::placeholder{color:var(--text3)}
+.nav-search .s-icon{
+  position:absolute;left:11px;top:50%;transform:translateY(-50%);
+  color:var(--text3);font-size:0.9rem;pointer-events:none;
+}
+
+.btn-publish-nav{
+  padding:8px 18px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--accent2),var(--accent));
+  border:none;border-radius:9px;
+  color:#fff;font-family:'Exo 2',sans-serif;
+  font-size:0.85rem;font-weight:700;
+  cursor:pointer;
+  box-shadow:var(--glow2);
+  transition:all 0.2s;
+  white-space:nowrap;
+}
+.btn-publish-nav:hover{transform:translateY(-1px);box-shadow:0 0 30px rgba(123,47,255,0.45)}
+
+/* ── MAIN / PAGES ───────────────────────────── */
+main{position:relative;z-index:1;max-width:1320px;margin:0 auto;padding:0 28px 80px}
+.page{display:none;animation:fadeIn .3s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── HERO ───────────────────────────────────── */
+.hero{
+  padding:56px 0 36px;
+  display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;
+}
+@media(max-width:900px){.hero{grid-template-columns:1fr;text-align:center}}
+.hero-left{}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(0,255,136,0.08);
+  border:1px solid rgba(0,255,136,0.25);
+  border-radius:20px;padding:5px 14px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:0.72rem;color:var(--green);
+  margin-bottom:18px;letter-spacing:0.5px;
+}
+.hero-badge .dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--green);
+  animation:blink 1.5s infinite;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+.hero h1{
+  font-size:clamp(2rem,4.5vw,3.8rem);
+  font-weight:800;line-height:1.08;
+  margin-bottom:18px;letter-spacing:-1px;
+}
+.h1-line1{display:block;color:var(--text)}
+.h1-line2{
+  display:block;
+  background:linear-gradient(90deg,var(--accent),var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.hero-sub{color:var(--text2);font-size:1.05rem;line-height:1.75;margin-bottom:28px;max-width:480px}
+.hero-ctas{display:flex;gap:12px;flex-wrap:wrap}
+.btn-primary{
+  padding:12px 26px;
+  background:linear-gradient(135deg,var(--accent2),var(--accent));
+  border:none;border-radius:11px;
+  color:#fff;font-family:'Exo 2',sans-serif;
+  font-size:0.95rem;font-weight:700;
+  cursor:pointer;transition:all 0.2s;
+  box-shadow:var(--glow2);
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 40px rgba(123,47,255,0.4),0 0 40px rgba(0,229,255,0.2)}
+.btn-secondary{
+  padding:12px 26px;
+  background:rgba(0,229,255,0.08);
+  border:1px solid rgba(0,229,255,0.3);
+  border-radius:11px;
+  color:var(--accent);font-family:'Exo 2',sans-serif;
+  font-size:0.95rem;font-weight:700;
+  cursor:pointer;transition:all 0.2s;
+}
+.btn-secondary:hover{background:rgba(0,229,255,0.15)}
+
+.hero-right{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+}
+@media(max-width:900px){.hero-right{display:none}}
+.stat-card{
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:14px;padding:20px;
+  transition:all 0.2s;
+}
+.stat-card:hover{border-color:rgba(0,229,255,0.3);transform:translateY(-2px)}
+.stat-card:first-child{grid-column:span 2;display:flex;align-items:center;justify-content:space-between;padding:16px 20px}
+.stat-num{
+  font-family:'Rajdhani',sans-serif;
+  font-size:2.4rem;font-weight:700;
+  color:var(--accent);display:block;
+  line-height:1;
+}
+.stat-lbl{color:var(--text2);font-size:0.8rem;margin-top:4px;font-weight:600}
+.stat-icon{font-size:2rem;opacity:0.6}
+
+/* ── TICKER ─────────────────────────────────── */
+.ticker{
+  margin:6px 0 30px;
+  overflow:hidden;
+  border-top:1px solid var(--border2);
+  border-bottom:1px solid var(--border2);
+  padding:8px 0;
+  position:relative;
+}
+.ticker::before,.ticker::after{
+  content:'';position:absolute;top:0;bottom:0;width:60px;z-index:2;
+}
+.ticker::before{left:0;background:linear-gradient(90deg,var(--bg),transparent)}
+.ticker::after{right:0;background:linear-gradient(-90deg,var(--bg),transparent)}
+.ticker-inner{
+  display:flex;gap:40px;
+  animation:ticker 30s linear infinite;
+  width:max-content;
+}
+@keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.ticker-item{
+  display:flex;align-items:center;gap:8px;
+  white-space:nowrap;
+  font-family:'Share Tech Mono',monospace;
+  font-size:0.75rem;color:var(--text2);
+}
+.ticker-item .t-dot{color:var(--accent)}
+
+/* ── FEATURED CAROUSEL ──────────────────────── */
+.featured-wrap{position:relative;margin-bottom:8px}
+.featured-scroll{
+  display:flex;gap:16px;overflow-x:auto;
+  scrollbar-width:none;padding-bottom:4px;
+  scroll-snap-type:x mandatory;
+}
+.featured-scroll::-webkit-scrollbar{display:none}
+.featured-card{
+  flex-shrink:0;width:380px;
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:20px;padding:28px;
+  position:relative;overflow:hidden;
+  cursor:pointer;transition:all 0.25s;
+  scroll-snap-align:start;
+}
+.featured-card:hover{border-color:rgba(0,229,255,0.4);transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,0.5),var(--glow)}
+.featured-card::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 80% 20%,rgba(123,47,255,0.12),transparent 60%);
+  pointer-events:none;
+}
+.f-label{
+  font-family:'Share Tech Mono',monospace;
+  font-size:0.68rem;color:var(--accent2);
+  letter-spacing:2px;text-transform:uppercase;
+  margin-bottom:14px;display:flex;align-items:center;gap:6px;
+}
+.f-label::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent2);display:inline-block}
+.f-top{display:flex;align-items:flex-start;gap:16px;margin-bottom:16px}
+.f-icon{
+  width:72px;height:72px;border-radius:18px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:2.2rem;
+  background:var(--bg4);
+  border:1px solid rgba(0,229,255,0.15);
+  box-shadow:0 4px 20px rgba(0,0,0,0.3);
+}
+.f-name{font-size:1.3rem;font-weight:800;margin-bottom:4px}
+.f-dev{font-family:'Share Tech Mono',monospace;font-size:0.78rem;color:var(--accent);margin-bottom:8px}
+.f-desc{color:var(--text2);font-size:0.85rem;line-height:1.55;margin-bottom:16px}
+.f-pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.f-pill{
+  background:rgba(0,229,255,0.08);
+  border:1px solid rgba(0,229,255,0.18);
+  border-radius:6px;padding:3px 10px;
+  font-size:0.75rem;color:var(--accent);
+  font-family:'Share Tech Mono',monospace;
+}
+.f-btn{
+  width:100%;padding:10px;
+  background:linear-gradient(135deg,rgba(123,47,255,0.4),rgba(0,229,255,0.3));
+  border:1px solid rgba(0,229,255,0.3);
+  border-radius:10px;
+  color:#fff;font-family:'Exo 2',sans-serif;
+  font-size:0.88rem;font-weight:700;
+  cursor:pointer;transition:all 0.2s;
+}
+.f-btn:hover{background:linear-gradient(135deg,var(--accent2),var(--accent));border-color:transparent}
+
+/* ── SECTION HEADER ─────────────────────────── */
+.sec-hd{
+  display:flex;align-items:center;justify-content:space-between;
+  margin:34px 0 16px;
+}
+.sec-title{
+  font-family:'Rajdhani',sans-serif;
+  font-size:1.3rem;font-weight:700;
+  display:flex;align-items:center;gap:10px;
+}
+.sec-title::before{
+  content:'';width:3px;height:22px;
+  background:linear-gradient(var(--accent),var(--accent2));
+  border-radius:2px;display:block;
+}
+.see-all{
+  color:var(--accent);font-size:0.82rem;
+  cursor:pointer;font-weight:600;
+  opacity:.8;transition:opacity .2s;
+}
+.see-all:hover{opacity:1}
+
+/* ── CATEGORY PILLS ─────────────────────────── */
+.cat-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}
+.cat-pill{
+  padding:7px 16px;border-radius:30px;
+  border:1px solid var(--border);
+  background:var(--bg3);
+  color:var(--text2);font-size:0.82rem;font-weight:600;
+  cursor:pointer;transition:all 0.18s;
+  font-family:'Exo 2',sans-serif;
+  user-select:none;
+}
+.cat-pill:hover{border-color:rgba(0,229,255,0.3);color:var(--text)}
+.cat-pill.active{
+  background:rgba(0,229,255,0.1);
+  border-color:var(--accent);
+  color:var(--accent);
+  box-shadow:0 0 12px rgba(0,229,255,0.15);
+}
+
+/* ── APP GRID ────────────────────────────────── */
+.apps-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+  gap:14px;
+}
+.app-card{
+  background:var(--card);
+  border:1px solid var(--border2);
+  border-radius:16px;padding:18px;
+  cursor:pointer;transition:all 0.22s;
+  position:relative;overflow:hidden;
+  display:flex;flex-direction:column;
+}
+.app-card::after{
+  content:'';position:absolute;inset:0;border-radius:16px;
+  background:linear-gradient(135deg,rgba(0,229,255,0.04),transparent 60%);
+  opacity:0;transition:opacity 0.2s;
+}
+.app-card:hover{
+  border-color:rgba(0,229,255,0.35);
+  transform:translateY(-4px);
+  box-shadow:0 8px 32px rgba(0,0,0,0.45),var(--glow);
+}
+.app-card:hover::after{opacity:1}
+.app-card-top{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px}
+.app-icon2{
+  width:52px;height:52px;border-radius:14px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.6rem;
+  background:var(--bg4);
+  border:1px solid var(--border);
+  overflow:hidden;
+}
+.app-icon2 img{width:100%;height:100%;object-fit:cover;border-radius:13px}
+.app-card-info{flex:1;min-width:0}
+.app-name2{font-weight:700;font-size:0.95rem;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.app-dev2{color:var(--accent);font-family:'Share Tech Mono',monospace;font-size:0.72rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.app-desc2{color:var(--text2);font-size:0.8rem;line-height:1.5;flex:1;margin-bottom:12px;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.app-foot{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.app-rating2{display:flex;align-items:center;gap:4px;font-size:0.8rem;color:var(--text2)}
+.stars2{color:#ffc107;font-size:0.85rem;letter-spacing:-1px}
+.app-meta2{display:flex;gap:8px;align-items:center}
+.app-size2{font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--text3)}
+.badge{
+  position:absolute;top:12px;right:12px;
+  border-radius:5px;padding:2px 8px;
+  font-size:0.65rem;font-weight:700;
+  font-family:'Share Tech Mono',monospace;
+  letter-spacing:0.5px;
+}
+.badge-free{background:rgba(0,255,136,0.12);border:1px solid rgba(0,255,136,0.3);color:var(--green)}
+.badge-new{background:rgba(255,61,113,0.12);border:1px solid rgba(255,61,113,0.3);color:var(--accent3)}
+.badge-hot{background:rgba(255,204,0,0.12);border:1px solid rgba(255,204,0,0.3);color:var(--gold)}
+.badge-open{background:rgba(123,47,255,0.12);border:1px solid rgba(123,47,255,0.3);color:#bb88ff}
+
+.btn-dl2{
+  width:100%;padding:9px;
+  background:rgba(0,229,255,0.07);
+  border:1px solid rgba(0,229,255,0.22);
+  border-radius:9px;
+  color:var(--accent);font-weight:700;
+  font-family:'Exo 2',sans-serif;font-size:0.82rem;
+  cursor:pointer;transition:all 0.18s;
+}
+.btn-dl2:hover{background:var(--accent);color:var(--bg);box-shadow:var(--glow);border-color:transparent}
+
+/* ── SORT BAR ────────────────────────────────── */
+.sort-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.sort-bar span{color:var(--text2);font-size:0.82rem}
+.sort-btn{
+  padding:5px 14px;border-radius:20px;
+  border:1px solid var(--border);
+  background:transparent;
+  color:var(--text2);font-size:0.8rem;font-weight:600;
+  cursor:pointer;font-family:'Exo 2',sans-serif;
+  transition:all 0.18s;
+}
+.sort-btn.active,.sort-btn:hover{
+  background:rgba(0,229,255,0.08);
+  border-color:rgba(0,229,255,0.3);
+  color:var(--accent);
+}
+
+/* ── EMPTY STATE ─────────────────────────────── */
+.empty{
+  grid-column:1/-1;text-align:center;
+  padding:60px 20px;color:var(--text3);
+}
+.empty-icon{font-size:3rem;margin-bottom:12px;opacity:.5}
+.empty p{font-size:0.9rem}
+
+/* ── LOADING ─────────────────────────────────── */
+.loading-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;
+}
+.skeleton{
+  background:var(--bg3);border:1px solid var(--border2);
+  border-radius:16px;padding:18px;height:200px;
+  position:relative;overflow:hidden;
+}
+.skeleton::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.04),transparent);
+  animation:shimmer 1.5s infinite;
+}
+@keyframes shimmer{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+
+/* ── UPLOAD PAGE ─────────────────────────────── */
+.upload-page{max-width:680px;margin:40px auto}
+.upload-hero{text-align:center;margin-bottom:36px}
+.upload-hero h2{font-size:2.2rem;font-weight:800;margin-bottom:10px}
+.upload-hero p{color:var(--text2);line-height:1.75;max-width:500px;margin:0 auto}
+.form-card2{
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:22px;padding:36px;
+}
+.fg{margin-bottom:22px}
+.fl{
+  display:block;margin-bottom:7px;
+  font-weight:600;font-size:0.85rem;color:var(--text2);
+}
+.fl b{color:var(--accent)}
+.fi,.fs,.fta{
+  width:100%;padding:11px 15px;
+  background:var(--bg4);
+  border:1px solid var(--border);
+  border-radius:10px;
+  color:var(--text);
+  font-family:'Exo 2',sans-serif;font-size:0.9rem;
+  outline:none;transition:all 0.2s;
+}
+.fi:focus,.fs:focus,.fta:focus{border-color:rgba(0,229,255,0.5);box-shadow:var(--glow)}
+.fi::placeholder{color:var(--text3)}
+.fta{resize:vertical;min-height:100px}
+.fs option{background:var(--bg2)}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:600px){.frow{grid-template-columns:1fr}}
+
+.drop2{
+  border:2px dashed rgba(0,229,255,0.25);
+  border-radius:14px;padding:36px;
+  text-align:center;cursor:pointer;
+  transition:all 0.22s;background:var(--bg4);
+  position:relative;
+}
+.drop2:hover,.drop2.drag{border-color:var(--accent);background:rgba(0,229,255,0.04);box-shadow:var(--glow)}
+.drop2-icon{font-size:2.5rem;margin-bottom:10px}
+.drop2-txt{color:var(--text2);font-size:0.88rem;line-height:1.6}
+.drop2-txt b{color:var(--accent)}
+.drop2-formats{margin-top:10px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.drop2-fmt{
+  background:rgba(0,229,255,0.08);border:1px solid var(--border);
+  border-radius:4px;padding:2px 10px;
+  font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--text2);
+}
+.file-chosen{
+  margin-top:12px;color:var(--green);
+  font-family:'Share Tech Mono',monospace;font-size:0.8rem;
+  display:none;align-items:center;gap:8px;justify-content:center;
+}
+
+.upload-progress{
+  height:4px;background:var(--bg4);border-radius:2px;margin-top:12px;display:none;overflow:hidden;
+}
+.upload-progress-bar{
+  height:100%;width:0%;
+  background:linear-gradient(90deg,var(--accent2),var(--accent));
+  border-radius:2px;transition:width 0.3s;
+}
+
+.icon-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.icon-preview-box{
+  width:72px;height:72px;border-radius:16px;
+  background:var(--bg4);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:2rem;flex-shrink:0;overflow:hidden;cursor:pointer;
+  transition:all .2s;
+}
+.icon-preview-box:hover{border-color:var(--accent)}
+.icon-preview-box img{width:100%;height:100%;object-fit:cover;border-radius:15px}
+.icon-emoji-grid{
+  display:grid;grid-template-columns:repeat(8,1fr);gap:6px;
+  background:var(--bg4);border-radius:12px;padding:12px;flex:1;max-width:320px;
+}
+.emoji-opt{
+  width:34px;height:34px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem;cursor:pointer;transition:all .15s;
+  background:transparent;border:2px solid transparent;
+}
+.emoji-opt:hover,.emoji-opt.sel{background:rgba(0,229,255,0.1);border-color:var(--accent)}
+
+.no-reg-banner{
+  display:flex;align-items:center;gap:10px;
+  margin-top:20px;padding:14px 18px;
+  background:rgba(0,255,136,0.05);
+  border:1px solid rgba(0,255,136,0.2);
+  border-radius:11px;
+  font-size:0.82rem;
+  font-family:'Share Tech Mono',monospace;
+}
+.no-reg-banner .nr-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--green);flex-shrink:0;
+  animation:blink 1.5s infinite;
+}
+.no-reg-banner p{color:var(--green);line-height:1.5}
+
+.btn-pub{
+  width:100%;padding:14px;
+  background:linear-gradient(135deg,var(--accent2),var(--accent));
+  border:none;border-radius:12px;
+  color:#fff;font-family:'Exo 2',sans-serif;
+  font-size:1rem;font-weight:800;
+  cursor:pointer;
+  box-shadow:0 0 30px rgba(0,229,255,0.15),var(--glow2);
+  transition:all 0.2s;margin-top:8px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-pub:hover{transform:translateY(-3px);box-shadow:0 0 50px rgba(0,229,255,0.25),0 0 50px rgba(123,47,255,0.25)}
+.btn-pub:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+/* ── APP DETAIL MODAL ───────────────────────── */
+.modal-bg{
+  position:fixed;inset:0;z-index:500;
+  background:rgba(0,0,0,0.85);
+  backdrop-filter:blur(14px);
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;
+  opacity:0;pointer-events:none;transition:opacity 0.25s;
+}
+.modal-bg.show{opacity:1;pointer-events:all}
+.modal2{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:24px;
+  width:100%;max-width:540px;
+  max-height:88vh;overflow-y:auto;
+  position:relative;
+  transform:scale(0.92) translateY(20px);
+  transition:transform 0.25s;
+  box-shadow:0 30px 80px rgba(0,0,0,0.7),var(--glow);
+}
+.modal-bg.show .modal2{transform:scale(1) translateY(0)}
+.modal2::-webkit-scrollbar{width:4px}
+.modal2::-webkit-scrollbar-thumb{background:rgba(0,229,255,0.2);border-radius:2px}
+.modal-head{
+  padding:28px 28px 0;
+  display:flex;align-items:flex-start;gap:18px;
+}
+.modal-big-icon{
+  width:86px;height:86px;border-radius:22px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:2.6rem;
+  background:var(--bg4);
+  border:1px solid var(--border);
+  overflow:hidden;
+}
+.modal-big-icon img{width:100%;height:100%;object-fit:cover;border-radius:21px}
+.modal-info{flex:1}
+.modal-name{font-size:1.6rem;font-weight:800;margin-bottom:4px}
+.modal-dev{font-family:'Share Tech Mono',monospace;font-size:0.82rem;color:var(--accent);margin-bottom:8px}
+.modal-rating{display:flex;align-items:center;gap:6px}
+.modal-stars{color:#ffc107;font-size:1rem;letter-spacing:-1px}
+.modal-rav{font-weight:700}
+.modal-rcount{color:var(--text2);font-size:0.82rem}
+.modal-close{
+  position:absolute;top:16px;right:16px;
+  background:var(--bg4);border:1px solid var(--border);
+  border-radius:8px;width:32px;height:32px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:var(--text2);font-size:1rem;
+  transition:all .18s;
+}
+.modal-close:hover{background:var(--accent3);color:#fff;border-color:transparent}
+.modal-body{padding:20px 28px 28px}
+.modal-desc{color:var(--text2);line-height:1.75;margin-bottom:18px;font-size:0.92rem}
+.modal-tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.tag2{
+  background:rgba(0,229,255,0.08);border:1px solid rgba(0,229,255,0.2);
+  border-radius:6px;padding:4px 12px;
+  font-size:0.76rem;color:var(--accent);
+  font-family:'Share Tech Mono',monospace;
+}
+.modal-meta-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;
+}
+.mmg-item{
+  background:var(--bg4);border-radius:10px;padding:12px;text-align:center;
+}
+.mmg-val{font-weight:700;font-size:0.95rem;display:block}
+.mmg-lbl{color:var(--text2);font-size:0.72rem;margin-top:3px;display:block;font-family:'Share Tech Mono',monospace}
+
+/* Rating section */
+.modal-rate-section{
+  background:var(--bg4);border-radius:12px;padding:16px;margin-bottom:18px;
+}
+.modal-rate-section h4{font-size:0.9rem;font-weight:700;margin-bottom:12px}
+.star-picker{display:flex;gap:8px;margin-bottom:12px}
+.star-pick{
+  font-size:1.6rem;cursor:pointer;
+  transition:transform .15s;opacity:.4;
+  background:none;border:none;
+}
+.star-pick:hover,.star-pick.active{opacity:1;transform:scale(1.2)}
+.rate-comment{
+  width:100%;padding:8px 12px;
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:8px;color:var(--text);
+  font-family:'Exo 2',sans-serif;font-size:0.85rem;
+  outline:none;resize:none;height:60px;margin-bottom:10px;
+}
+.rate-comment:focus{border-color:rgba(0,229,255,0.4)}
+.btn-rate{
+  width:100%;padding:9px;
+  background:rgba(255,204,0,0.1);
+  border:1px solid rgba(255,204,0,0.25);
+  border-radius:8px;color:var(--gold);
+  font-family:'Exo 2',sans-serif;font-size:0.85rem;font-weight:700;
+  cursor:pointer;transition:all .2s;
+}
+.btn-rate:hover{background:rgba(255,204,0,0.2)}
+
+/* Reviews */
+.reviews-list{margin-bottom:18px}
+.review-item{
+  border-bottom:1px solid var(--border2);
+  padding:12px 0;display:flex;gap:10px;
+}
+.review-item:last-child{border-bottom:none}
+.review-stars{color:#ffc107;font-size:0.85rem;flex-shrink:0}
+.review-txt{color:var(--text2);font-size:0.82rem;line-height:1.5}
+.review-date{font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--text3)}
+
+.btn-dl-big2{
+  width:100%;padding:14px;
+  background:linear-gradient(135deg,var(--accent2),var(--accent));
+  border:none;border-radius:12px;
+  color:#fff;font-size:0.95rem;font-weight:800;
+  font-family:'Exo 2',sans-serif;cursor:pointer;
+  transition:all .22s;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-dl-big2:hover{transform:translateY(-2px);box-shadow:var(--glow),var(--glow2)}
+.btn-dl-big2 .dl-sub{font-size:0.75rem;opacity:.75;font-weight:400}
+.source-link{
+  text-align:center;margin-top:12px;
+  font-family:'Share Tech Mono',monospace;font-size:0.75rem;
+  color:var(--text3);
+}
+.source-link a{color:var(--accent2);text-decoration:none}
+.source-link a:hover{text-decoration:underline}
+
+/* ── TOAST ───────────────────────────────────── */
+.toast2{
+  position:fixed;bottom:28px;right:28px;z-index:999;
+  background:var(--bg3);
+  border-radius:12px;padding:14px 18px;
+  display:flex;align-items:center;gap:10px;
+  box-shadow:0 8px 30px rgba(0,0,0,0.4);
+  transform:translateY(20px);opacity:0;
+  transition:all .3s;pointer-events:none;
+  min-width:240px;max-width:360px;
+}
+.toast2.show{transform:translateY(0);opacity:1}
+.toast2.success{border:1px solid rgba(0,255,136,0.3);box-shadow:0 8px 30px rgba(0,0,0,0.4),var(--glow3)}
+.toast2.error{border:1px solid rgba(255,61,113,0.3)}
+.toast2.info{border:1px solid rgba(0,229,255,0.3);box-shadow:0 8px 30px rgba(0,0,0,0.4),var(--glow)}
+.toast2-icon{font-size:1.2rem;flex-shrink:0}
+.toast2-text{font-size:0.88rem;font-weight:600;color:var(--text)}
+
+/* ── RESPONSIVE ─────────────────────────────── */
+@media(max-width:768px){
+  nav{padding:0 14px;gap:8px}
+  main{padding:0 14px 60px}
+  .nav-search{max-width:none}
+  .modal-meta-grid{grid-template-columns:1fr 1fr}
+  .featured-card{width:300px}
+}
+@media(max-width:500px){
+  .apps-grid{grid-template-columns:1fr 1fr}
+  .app-icon2{width:44px;height:44px;font-size:1.3rem}
+  .modal-head{flex-direction:column}
+  .modal-big-icon{width:70px;height:70px}
+}
+</style>
+</head>
+<body>
+
+<!-- ── NAV ──────────────────────────────────────── -->
+<nav>
+  <div class="logo" onclick="goPage('home')">
+    <div class="logo-icon">⬡</div>
+    Free<span>Store</span>
+  </div>
+  <nav class="nav-links">
+    <a class="active" id="n-home"  onclick="goPage('home')">Inicio</a>
+    <a id="n-store" onclick="goPage('store')">Tienda</a>
+    <a id="n-games" onclick="goPage('games')">Juegos</a>
+    <a id="n-upload" onclick="goPage('upload')">Publicar</a>
+  </nav>
+  <div class="nav-search">
+    <span class="s-icon">⌕</span>
+    <input type="text" id="searchInput" placeholder="Buscar apps..." oninput="onSearch(this.value)">
+  </div>
+  <button class="btn-publish-nav" onclick="goPage('upload')">+ Subir APK</button>
+</nav>
+
+<main>
+
+<!-- ──────────────────────────────────────────────── -->
+<!-- HOME PAGE                                        -->
+<!-- ──────────────────────────────────────────────── -->
+<div class="page active" id="page-home">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-left">
+      <div class="hero-badge"><span class="dot"></span> Plataforma 100% Libre · Sin Registro</div>
+      <h1>
+        <span class="h1-line1">La tienda de apps</span>
+        <span class="h1-line2">libre y abierta</span>
+      </h1>
+      <p class="hero-sub">Publica tu APK sin registro ni costos. Descarga cualquier app gratis. La alternativa real al ecosistema cerrado.</p>
+      <div class="hero-ctas">
+        <button class="btn-primary" onclick="goPage('store')">🗂 Explorar Apps</button>
+        <button class="btn-secondary" onclick="goPage('upload')">📦 Publicar Gratis</button>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="stat-card" style="grid-column:span 2">
+        <div>
+          <span class="stat-num" id="stat-total">—</span>
+          <div class="stat-lbl">Apps publicadas en la plataforma</div>
+        </div>
+        <span class="stat-icon">📱</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-num" id="stat-dl">—</span>
+        <div class="stat-lbl">Descargas totales</div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-num" style="color:var(--green)">0$</span>
+        <div class="stat-lbl">Costo de publicar</div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-num" style="color:var(--accent2)">Sin</span>
+        <div class="stat-lbl">Registro requerido</div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-num" style="color:var(--gold)">∞</span>
+        <div class="stat-lbl">Descargas gratis</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TICKER -->
+  <div class="ticker">
+    <div class="ticker-inner" id="ticker-inner"></div>
+  </div>
+
+  <!-- FEATURED -->
+  <div class="sec-hd">
+    <div class="sec-title">⭐ Destacadas</div>
+    <span class="see-all" onclick="goPage('store')">Ver todo →</span>
+  </div>
+  <div class="featured-wrap">
+    <div class="featured-scroll" id="featured-scroll"></div>
+  </div>
+
+  <!-- CATEGORIES -->
+  <div class="sec-hd"><div class="sec-title">📂 Categorías Populares</div></div>
+  <div class="cat-row" id="home-cats"></div>
+
+  <!-- TRENDING -->
+  <div class="sec-hd">
+    <div class="sec-title">🔥 Más Descargadas</div>
+    <span class="see-all" onclick="goPage('store');setSortParam('popular')">Ver más →</span>
+  </div>
+  <div class="apps-grid" id="trending-grid"></div>
+
+  <!-- RECENT -->
+  <div class="sec-hd">
+    <div class="sec-title">🆕 Recién Publicadas</div>
+    <span class="see-all" onclick="goPage('store')">Ver más →</span>
+  </div>
+  <div class="apps-grid" id="recent-grid"></div>
+
+</div>
+
+<!-- ──────────────────────────────────────────────── -->
+<!-- STORE PAGE                                       -->
+<!-- ──────────────────────────────────────────────── -->
+<div class="page" id="page-store">
+  <div style="padding:40px 0 20px">
+    <h2 style="font-size:2rem;font-weight:800;margin-bottom:6px">Todas las Apps</h2>
+    <p style="color:var(--text2)">Descarga cualquier APK gratis. Sin registro, sin límites.</p>
+  </div>
+  <div class="cat-row" id="store-cats"></div>
+  <div class="sort-bar">
+    <span>Ordenar por:</span>
+    <button class="sort-btn" data-sort="newest" onclick="setSort(this)">Más nuevas</button>
+    <button class="sort-btn active" data-sort="popular" onclick="setSort(this)">Más descargadas</button>
+    <button class="sort-btn" data-sort="rating" onclick="setSort(this)">Mejor valoradas</button>
+    <button class="sort-btn" data-sort="name" onclick="setSort(this)">A–Z</button>
+    <span id="store-count" style="margin-left:auto;color:var(--text2);font-size:0.8rem;font-family:'Share Tech Mono',monospace"></span>
+  </div>
+  <div class="apps-grid" id="store-grid"></div>
+  <div style="text-align:center;margin-top:24px" id="store-pagination"></div>
+</div>
+
+<!-- ──────────────────────────────────────────────── -->
+<!-- GAMES PAGE                                       -->
+<!-- ──────────────────────────────────────────────── -->
+<div class="page" id="page-games">
+  <div style="padding:40px 0 20px">
+    <h2 style="font-size:2rem;font-weight:800;margin-bottom:6px">🎮 Juegos</h2>
+    <p style="color:var(--text2)">Los mejores juegos APK de la comunidad. Gratis y sin restricciones.</p>
+  </div>
+  <div class="sort-bar">
+    <span>Ordenar:</span>
+    <button class="sort-btn active" data-sort="popular" onclick="setSort(this,'games')">Más jugados</button>
+    <button class="sort-btn" data-sort="newest" onclick="setSort(this,'games')">Nuevos</button>
+    <button class="sort-btn" data-sort="rating" onclick="setSort(this,'games')">Mejor valorados</button>
+  </div>
+  <div class="apps-grid" id="games-grid"></div>
+</div>
+
+<!-- ──────────────────────────────────────────────── -->
+<!-- UPLOAD PAGE                                      -->
+<!-- ──────────────────────────────────────────────── -->
+<div class="page" id="page-upload">
+  <div class="upload-page">
+    <div class="upload-hero">
+      <h2>📦 Publica tu <span style="color:var(--accent)">APK</span></h2>
+      <p>Sin registro. Sin costos. Tu app disponible para toda la comunidad en segundos. La plataforma donde los devs tienen el control.</p>
+    </div>
+
+    <div class="form-card2">
+      <!-- APK DROP -->
+      <div class="fg">
+        <label class="fl">Archivo APK <b>*</b></label>
+        <div class="drop2" id="dropZone"
+          onclick="document.getElementById('apkInput').click()"
+          ondragover="event.preventDefault();this.classList.add('drag')"
+          ondragleave="this.classList.remove('drag')"
+          ondrop="handleDrop(event)">
+          <div class="drop2-icon">📦</div>
+          <div class="drop2-txt"><b>Arrastra tu APK aquí</b><br>o haz clic para seleccionar</div>
+          <div class="drop2-formats">
+            <span class="drop2-fmt">.apk</span>
+            <span class="drop2-fmt">.xapk</span>
+            <span class="drop2-fmt">.apks</span>
+          </div>
+          <div class="file-chosen" id="fileChosen">
+            <span>✓</span><span id="fileChosenName"></span>
+          </div>
+        </div>
+        <div class="upload-progress" id="uploadProgress">
+          <div class="upload-progress-bar" id="uploadProgressBar"></div>
+        </div>
+        <input type="file" id="apkInput" accept=".apk,.xapk,.apks" style="display:none" onchange="onFileSelect(this)">
+      </div>
+
+      <!-- ICON -->
+      <div class="fg">
+        <label class="fl">Ícono de la app</label>
+        <div class="icon-row">
+          <div class="icon-preview-box" id="iconPreview" onclick="document.getElementById('iconInput').click()">
+            <span id="iconEmoji">📦</span>
+          </div>
+          <div>
+            <div style="font-size:0.8rem;color:var(--text2);margin-bottom:8px">Elige un emoji o sube imagen (PNG 512×512):</div>
+            <div class="icon-emoji-grid" id="emojiGrid"></div>
+          </div>
+        </div>
+        <input type="file" id="iconInput" accept="image/*" style="display:none" onchange="onIconSelect(this)">
+      </div>
+
+      <!-- FIELDS -->
+      <div class="frow">
+        <div class="fg">
+          <label class="fl">Nombre <b>*</b></label>
+          <input type="text" class="fi" id="f-name" placeholder="Mi App Increíble">
+        </div>
+        <div class="fg">
+          <label class="fl">Versión <b>*</b></label>
+          <input type="text" class="fi" id="f-version" placeholder="1.0.0">
+        </div>
+      </div>
+
+      <div class="fg">
+        <label class="fl">Desarrollador / Alias</label>
+        <input type="text" class="fi" id="f-dev" placeholder="Tu nombre o alias (opcional)">
+      </div>
+
+      <div class="frow">
+        <div class="fg">
+          <label class="fl">Categoría <b>*</b></label>
+          <select class="fs" id="f-cat">
+            <option value="">-- Seleccionar --</option>
+            <option value="utilidades">🔧 Utilidades</option>
+            <option value="juegos">🎮 Juegos</option>
+            <option value="multimedia">🎵 Multimedia</option>
+            <option value="social">💬 Social</option>
+            <option value="educacion">📚 Educación</option>
+            <option value="productividad">⚡ Productividad</option>
+            <option value="seguridad">🔒 Seguridad</option>
+            <option value="otros">📦 Otros</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label class="fl">Android mínimo</label>
+          <select class="fs" id="f-android">
+            <option value="6.0+">Android 6.0+</option>
+            <option value="7.0+">Android 7.0+</option>
+            <option value="8.0+" selected>Android 8.0+</option>
+            <option value="9.0+">Android 9.0+</option>
+            <option value="10.0+">Android 10.0+</option>
+            <option value="11.0+">Android 11.0+</option>
+            <option value="12.0+">Android 12.0+</option>
+            <option value="13.0+">Android 13.0+</option>
+            <option value="14.0+">Android 14.0+</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="fg">
+        <label class="fl">Descripción <b>*</b></label>
+        <textarea class="fta" id="f-desc" placeholder="Describe qué hace tu app, sus características, requisitos del sistema..."></textarea>
+      </div>
+
+      <div class="fg">
+        <label class="fl">Código fuente (GitHub, GitLab, etc.)</label>
+        <input type="text" class="fi" id="f-source" placeholder="https://github.com/usuario/app (opcional)">
+      </div>
+
+      <button class="btn-pub" id="publishBtn" onclick="publishApp()">
+        <span>🚀</span> <span>Publicar APK Gratis</span>
+      </button>
+
+      <div class="no-reg-banner">
+        <div class="nr-dot"></div>
+        <p>Sin cuenta · Sin email · Sin datos personales · Publicación instantánea · Gratis para siempre</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<!-- ── APP DETAIL MODAL ─────────────────────────────── -->
+<div class="modal-bg" id="modalBg" onclick="closeModalCheck(event)">
+  <div class="modal2" id="modal2">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-head">
+      <div class="modal-big-icon" id="m-icon"><span id="m-emoji">📦</span></div>
+      <div class="modal-info">
+        <div class="modal-name" id="m-name"></div>
+        <div class="modal-dev" id="m-dev"></div>
+        <div class="modal-rating">
+          <span class="modal-stars" id="m-stars"></span>
+          <span class="modal-rav" id="m-rav"></span>
+          <span class="modal-rcount" id="m-rcount"></span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-body">
+      <p class="modal-desc" id="m-desc"></p>
+      <div class="modal-tags" id="m-tags"></div>
+      <div class="modal-meta-grid" id="m-meta"></div>
+
+      <!-- Rate section -->
+      <div class="modal-rate-section">
+        <h4>⭐ Calificar esta app</h4>
+        <div class="star-picker" id="starPicker">
+          <button class="star-pick" data-s="1" onclick="pickStar(1)">★</button>
+          <button class="star-pick" data-s="2" onclick="pickStar(2)">★</button>
+          <button class="star-pick" data-s="3" onclick="pickStar(3)">★</button>
+          <button class="star-pick" data-s="4" onclick="pickStar(4)">★</button>
+          <button class="star-pick" data-s="5" onclick="pickStar(5)">★</button>
+        </div>
+        <textarea class="rate-comment" id="rateComment" placeholder="Comentario (opcional)..."></textarea>
+        <button class="btn-rate" onclick="submitRating()">Enviar Calificación</button>
+      </div>
+
+      <!-- Reviews -->
+      <div class="reviews-list" id="m-reviews"></div>
+
+      <button class="btn-dl-big2" id="m-dl-btn">
+        <span>📥 Descargar APK</span>
+        <span class="dl-sub" id="m-dl-sub">— GRATIS</span>
+      </button>
+      <div class="source-link" id="m-src"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── TOAST ──────────────────────────────────────── -->
+<div class="toast2" id="toast2">
+  <span class="toast2-icon" id="t-icon">✅</span>
+  <span class="toast2-text" id="t-text"></span>
+</div>
+
+<script>
+// ── STATE ─────────────────────────────────────────
+let currentPage = 'home';
+let storeSort = 'popular';
+let storeCat = '';
+let storePage = 1;
+let searchQ = '';
+let currentApp = null;
+let selectedStar = 0;
+let selectedEmoji = '📦';
+let selectedIconFile = null;
+let selectedApkFile = null;
+const CATS = [
+  {val:'',lbl:'Todos 🌐'},
+  {val:'utilidades',lbl:'🔧 Utilidades'},
+  {val:'juegos',lbl:'🎮 Juegos'},
+  {val:'multimedia',lbl:'🎵 Multimedia'},
+  {val:'social',lbl:'💬 Social'},
+  {val:'educacion',lbl:'📚 Educación'},
+  {val:'productividad',lbl:'⚡ Productividad'},
+  {val:'seguridad',lbl:'🔒 Seguridad'},
+];
+const EMOJIS = ['📦','🚀','🎮','🎨','🛡️','🔒','💬','📝','🎵','💻','📷','📐','🌐','⚡','🔧','🏎️','⚔️','🧩','🤖','🌟','🔮','💡','🗂️','🎯'];
+
+// ── HELPERS ───────────────────────────────────────
+const $  = id => document.getElementById(id);
+const fmtNum = n => n >= 1000 ? (n/1000).toFixed(1)+'K' : String(n);
+const starsHTML = r => {
+  let h='';const f=Math.floor(r);const half=r-f>=0.5;
+  for(let i=0;i<f;i++) h+='★';
+  if(half) h+='½';
+  const e=5-f-(half?1:0);
+  for(let i=0;i<e;i++) h+='☆';
+  return h;
+};
+const badgeFor = app => {
+  if(app.downloads>50000) return '<span class="badge badge-hot">HOT</span>';
+  const dt = new Date(app.created_at);
+  const days = (Date.now()-dt)/(86400000);
+  if(days<7) return '<span class="badge badge-new">NUEVO</span>';
+  if(app.source_url) return '<span class="badge badge-open">OPEN</span>';
+  return '<span class="badge badge-free">GRATIS</span>';
+};
+
+// ── API ───────────────────────────────────────────
+async function api(path, opts={}) {
+  try {
+    const r = await fetch(path, opts);
+    return await r.json();
+  } catch(e) {
+    console.error('API error', path, e);
+    return null;
+  }
+}
+
+// ── RENDER CARD ───────────────────────────────────
+function renderCard(a) {
+  const iconSrc = a.icon_file ? `/uploads/icons/${a.icon_file}` : null;
+  const iconHTML = iconSrc
+    ? `<img src="${iconSrc}" alt="${a.name}">`
+    : a.icon_emoji || '📦';
+  return `
+  <div class="app-card" onclick="openModal('${a.id}')">
+    ${badgeFor(a)}
+    <div class="app-card-top">
+      <div class="app-icon2">${typeof iconHTML==='string'&&iconHTML.startsWith('<img')?iconHTML:iconHTML}</div>
+      <div class="app-card-info">
+        <div class="app-name2">${a.name}</div>
+        <div class="app-dev2">${a.developer||'Anónimo'}</div>
+      </div>
+    </div>
+    <div class="app-desc2">${a.description}</div>
+    <div class="app-foot">
+      <div class="app-rating2">
+        <span class="stars2">${starsHTML(a.rating||0).replace(/½/,'⭑')}</span>
+        ${(a.rating||0).toFixed(1)}
+      </div>
+      <div class="app-meta2">
+        <span class="app-size2">${a.size||'—'}</span>
+      </div>
+    </div>
+    <button class="btn-dl2" onclick="event.stopPropagation();dlApp(event,'${a.id}','${a.name}')">📥 Descargar APK</button>
+  </div>`;
+}
+
+function renderGrid(id, apps, empty='No hay apps aquí todavía.') {
+  const el = $(id);
+  if(!el) return;
+  if(!apps||!apps.length) {
+    el.innerHTML=`<div class="empty"><div class="empty-icon">🔭</div><p>${empty}</p></div>`;
+    return;
+  }
+  el.innerHTML = apps.map(renderCard).join('');
+}
+
+function showSkeleton(id, n=6) {
+  const el=$(id);if(!el)return;
+  el.innerHTML = Array(n).fill('<div class="skeleton"></div>').join('');
+}
+
+// ── PAGES ─────────────────────────────────────────
+function goPage(p) {
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  $('page-'+p).classList.add('active');
+  document.querySelectorAll('.nav-links a').forEach(x=>x.classList.remove('active'));
+  const nl = $('n-'+p); if(nl) nl.classList.add('active');
+  currentPage = p;
+  window.scrollTo({top:0});
+  if(p==='home') loadHome();
+  else if(p==='store') loadStore();
+  else if(p==='games') loadGames();
+}
+
+// ── LOAD HOME ─────────────────────────────────────
+async function loadHome() {
+  // Stats
+  const stats = await api('/api/stats');
+  if(stats) {
+    $('stat-total').textContent = fmtNum(stats.total_apps);
+    $('stat-dl').textContent = fmtNum(stats.total_downloads);
+  }
+
+  // Ticker
+  const all = await api('/api/apps?limit=50&sort=popular');
+  if(all&&all.apps) {
+    const items = [...all.apps,...all.apps];
+    $('ticker-inner').innerHTML = items.map(a=>`
+      <div class="ticker-item">
+        <span>${a.icon_emoji}</span>
+        <span>${a.name}</span>
+        <span class="t-dot">↓${fmtNum(a.downloads)}</span>
+      </div>`).join('');
+  }
+
+  // Featured
+  showSkeleton('featured-scroll',4);
+  const feat = await api('/api/apps/featured');
+  if(feat&&feat.length) {
+    $('featured-scroll').innerHTML = feat.map(a=>`
+      <div class="featured-card" onclick="openModal('${a.id}')">
+        <div class="f-label">APP DESTACADA</div>
+        <div class="f-top">
+          <div class="f-icon">${a.icon_emoji||'📦'}</div>
+          <div>
+            <div class="f-name">${a.name}</div>
+            <div class="f-dev">${a.developer}</div>
+          </div>
+        </div>
+        <div class="f-desc">${a.description.substring(0,100)}...</div>
+        <div class="f-pills">
+          <span class="f-pill">📦 ${a.size}</span>
+          <span class="f-pill">⭐ ${(a.rating||0).toFixed(1)}</span>
+          <span class="f-pill">📥 ${fmtNum(a.downloads)}</span>
+        </div>
+        <button class="f-btn" onclick="event.stopPropagation();dlApp(event,'${a.id}','${a.name}')">📥 Descargar Gratis</button>
+      </div>`).join('');
+  }
+
+  // Category pills
+  const catEl = $('home-cats');
+  if(catEl) catEl.innerHTML = CATS.slice(1).map(c=>`
+    <button class="cat-pill" onclick="goPage('store');filterByCat('${c.val}')">${c.lbl}</button>`).join('');
+
+  // Trending
+  showSkeleton('trending-grid',6);
+  const trend = await api('/api/apps?sort=popular&limit=6');
+  if(trend) renderGrid('trending-grid', trend.apps);
+
+  // Recent
+  showSkeleton('recent-grid',6);
+  const recent = await api('/api/apps?sort=newest&limit=6');
+  if(recent) renderGrid('recent-grid', recent.apps);
+}
+
+// ── LOAD STORE ────────────────────────────────────
+async function loadStore() {
+  // Category pills
+  const el = $('store-cats');
+  if(el) el.innerHTML = CATS.map(c=>`
+    <button class="cat-pill${storeCat===c.val?' active':''}" onclick="filterByCat('${c.val}')">${c.lbl}</button>`).join('');
+
+  showSkeleton('store-grid',8);
+  const params = new URLSearchParams({sort:storeSort,page:storePage,limit:16});
+  if(storeCat) params.set('cat',storeCat);
+  if(searchQ) params.set('q',searchQ);
+  const data = await api('/api/apps?'+params);
+  if(!data) return;
+
+  $('store-count').textContent = `${data.total} apps`;
+  renderGrid('store-grid', data.apps, 'No se encontraron apps con esos filtros.');
+
+  // Pagination
+  const pg = $('store-pagination');
+  if(pg && data.pages > 1) {
+    let h = '';
+    for(let i=1;i<=data.pages;i++) {
+      h+=`<button onclick="storePage=${i};loadStore()" style="margin:3px;padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:${i===storePage?'var(--accent)':'var(--bg3)'};color:${i===storePage?'var(--bg)':'var(--text2)'};cursor:pointer;font-family:'Exo 2',sans-serif;font-size:.85rem;font-weight:700">${i}</button>`;
+    }
+    pg.innerHTML = h;
+  } else if(pg) pg.innerHTML='';
+}
+
+// ── LOAD GAMES ────────────────────────────────────
+async function loadGames() {
+  showSkeleton('games-grid',8);
+  const data = await api('/api/apps?cat=juegos&sort='+storeSort+'&limit=24');
+  if(data) renderGrid('games-grid', data.apps, 'No hay juegos publicados todavía. ¡Sé el primero!');
+}
+
+// ── FILTERS ───────────────────────────────────────
+function filterByCat(val) {
+  storeCat=val;storePage=1;
+  document.querySelectorAll('.cat-pill').forEach(b=>{
+    b.classList.toggle('active', b.textContent.includes(val===''?'Todos':val)||b.onclick.toString().includes(`'${val}'`));
+  });
+  if(currentPage==='store') loadStore();
+}
+
+function setSort(btn, ctx='store') {
+  storeSort=btn.dataset.sort; storePage=1;
+  document.querySelectorAll('.sort-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if(ctx==='games') loadGames(); else loadStore();
+}
+
+function setSortParam(s){storeSort=s}
+
+function onSearch(val) {
+  searchQ=val;
+  if(currentPage==='store'||currentPage==='home') {
+    clearTimeout(window._st);
+    window._st=setTimeout(()=>{
+      if(currentPage==='store') loadStore();
+      else if(val.length>1) { goPage('store'); }
+    },350);
+  }
+}
+
+// ── MODAL ─────────────────────────────────────────
+async function openModal(id) {
+  const data = await api(`/api/apps/${id}`);
+  if(!data) return;
+  currentApp = data;
+  selectedStar = 0;
+
+  // Icon
+  if(data.icon_file) {
+    $('m-icon').innerHTML=`<img src="/uploads/icons/${data.icon_file}" style="width:100%;height:100%;object-fit:cover;border-radius:21px">`;
+  } else {
+    $('m-icon').innerHTML=`<span style="font-size:2.6rem">${data.icon_emoji||'📦'}</span>`;
+  }
+
+  $('m-name').textContent = data.name;
+  $('m-dev').textContent = data.developer||'Anónimo';
+  $('m-desc').textContent = data.description;
+  const r = data.rating||0;
+  $('m-stars').textContent = starsHTML(r);
+  $('m-rav').textContent = r.toFixed(1);
+  $('m-rcount').textContent = `(${data.rating_count||0} valoraciones)`;
+  $('m-tags').innerHTML = [data.category, data.version, data.android_min]
+    .filter(Boolean).map(t=>`<span class="tag2">${t}</span>`).join('');
+  $('m-meta').innerHTML = `
+    <div class="mmg-item"><span class="mmg-val">${data.version}</span><span class="mmg-lbl">Versión</span></div>
+    <div class="mmg-item"><span class="mmg-val">${data.size||'—'}</span><span class="mmg-lbl">Tamaño</span></div>
+    <div class="mmg-item"><span class="mmg-val">${data.android_min||'—'}</span><span class="mmg-lbl">Android mín.</span></div>
+    <div class="mmg-item"><span class="mmg-val">${fmtNum(data.downloads||0)}</span><span class="mmg-lbl">Descargas</span></div>
+    <div class="mmg-item"><span class="mmg-val">${data.rating_count||0}</span><span class="mmg-lbl">Reseñas</span></div>
+    <div class="mmg-item"><span class="mmg-val">${data.created_at?.split('T')[0]||'—'}</span><span class="mmg-lbl">Publicada</span></div>
+  `;
+
+  // Reviews
+  const rl = $('m-reviews');
+  if(data.ratings&&data.ratings.length) {
+    rl.innerHTML = '<div style="font-size:.85rem;font-weight:700;margin-bottom:8px">Reseñas recientes:</div>' +
+      data.ratings.slice(0,5).map(rv=>`
+        <div class="review-item">
+          <div class="review-stars">${'★'.repeat(rv.score)}</div>
+          <div>
+            <div class="review-txt">${rv.comment||'Sin comentario'}</div>
+            <div class="review-date">${rv.created_at?.split('T')[0]||''}</div>
+          </div>
+        </div>`).join('');
+  } else rl.innerHTML='';
+
+  $('rateComment').value='';
+  document.querySelectorAll('.star-pick').forEach(s=>s.classList.remove('active'));
+
+  $('m-dl-btn').onclick = ()=>dlApp(null, data.id, data.name);
+  $('m-dl-sub').textContent = `${data.size||''} · GRATIS`;
+
+  if(data.source_url) {
+    $('m-src').innerHTML=`Código fuente: <a href="${data.source_url}" target="_blank">${data.source_url}</a>`;
+  } else {
+    $('m-src').innerHTML='';
+  }
+
+  $('modalBg').classList.add('show');
+}
+
+function closeModal(){ $('modalBg').classList.remove('show'); currentApp=null; }
+function closeModalCheck(e){ if(e.target.id==='modalBg') closeModal(); }
+
+// ── RATING ────────────────────────────────────────
+function pickStar(n) {
+  selectedStar = n;
+  document.querySelectorAll('.star-pick').forEach(s=>{
+    s.classList.toggle('active', parseInt(s.dataset.s)<=n);
+  });
+}
+
+async function submitRating() {
+  if(!currentApp) return;
+  if(!selectedStar) { toast('⚠️ Elige una calificación','error'); return; }
+  const comment = $('rateComment').value.trim();
+  const res = await api(`/api/apps/${currentApp.id}/rate`,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({score:selectedStar,comment})
+  });
+  if(res&&res.ok) {
+    toast('⭐ Calificación enviada, ¡gracias!','success');
+    openModal(currentApp.id); // refresh
+  }
+}
+
+// ── DOWNLOAD ──────────────────────────────────────
+async function dlApp(e, id, name) {
+  if(e) e.stopPropagation();
+  const data = await api(`/api/apps/${id}/download`,{method:'POST'});
+  if(!data) { toast('❌ Error al descargar','error'); return; }
+  if(!data.url) {
+    toast(`📥 ${name} registrado! (APK de demo)`, 'info');
+    return;
+  }
+  const a = document.createElement('a');
+  a.href = data.url; a.download = data.filename; a.click();
+  toast(`📥 Descargando ${name}...`,'success');
+}
+
+// ── PUBLISH ───────────────────────────────────────
+function onFileSelect(input) {
+  if(!input.files[0]) return;
+  const f = input.files[0];
+  selectedApkFile = f;
+  $('fileChosen').style.display='flex';
+  $('fileChosenName').textContent=`${f.name} · ${(f.size/1048576).toFixed(1)} MB`;
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  $('dropZone').classList.remove('drag');
+  const f = e.dataTransfer.files[0];
+  if(f&&/\.(apk|xapk|apks)$/i.test(f.name)) {
+    selectedApkFile=f;
+    $('fileChosen').style.display='flex';
+    $('fileChosenName').textContent=`${f.name} · ${(f.size/1048576).toFixed(1)} MB`;
+  } else toast('⚠️ Solo se aceptan archivos APK','error');
+}
+
+function onIconSelect(input) {
+  if(!input.files[0]) return;
+  selectedIconFile = input.files[0];
+  const reader = new FileReader();
+  reader.onload = e => {
+    $('iconPreview').innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:15px">`;
+  };
+  reader.readAsDataURL(selectedIconFile);
+}
+
+function pickEmoji(em) {
+  selectedEmoji=em; selectedIconFile=null;
+  $('iconPreview').innerHTML=`<span id="iconEmoji">${em}</span>`;
+  document.querySelectorAll('.emoji-opt').forEach(b=>b.classList.toggle('sel',b.textContent===em));
+}
+
+async function publishApp() {
+  const name=$('f-name').value.trim();
+  const version=$('f-version').value.trim();
+  const cat=$('f-cat').value;
+  const desc=$('f-desc').value.trim();
+
+  if(!name||!version||!cat||!desc) { toast('⚠️ Completa todos los campos obligatorios','error'); return; }
+  if(!selectedApkFile) { toast('⚠️ Selecciona un archivo APK','error'); return; }
+
+  const btn=$('publishBtn');
+  btn.disabled=true;
+  btn.innerHTML='<span>⏳</span><span>Publicando...</span>';
+
+  const fd = new FormData();
+  fd.append('name',name);
+  fd.append('version',version);
+  fd.append('category',cat);
+  fd.append('description',desc);
+  fd.append('developer',$('f-dev').value.trim()||'Anónimo');
+  fd.append('android_min',$('f-android').value);
+  fd.append('source_url',$('f-source').value.trim());
+  fd.append('icon_emoji',selectedEmoji);
+  fd.append('apk_file',selectedApkFile);
+  if(selectedIconFile) fd.append('icon_file',selectedIconFile);
+
+  // Progress animation
+  const prog=$('uploadProgress');
+  const bar=$('uploadProgressBar');
+  prog.style.display='block'; bar.style.width='0%';
+  let p=0;
+  const ticker=setInterval(()=>{if(p<85){p+=Math.random()*8;bar.style.width=p+'%'}},200);
+
+  const res = await api('/api/apps',{method:'POST',body:fd});
+  clearInterval(ticker);
+  bar.style.width='100%';
+
+  btn.disabled=false;
+  btn.innerHTML='<span>🚀</span><span>Publicar APK Gratis</span>';
+
+  setTimeout(()=>{prog.style.display='none';bar.style.width='0%'},600);
+
+  if(res&&res.ok){
+    toast(`🚀 ¡${name} publicada exitosamente!`,'success');
+    // Reset form
+    $('f-name').value='';$('f-version').value='';$('f-cat').value='';
+    $('f-desc').value='';$('f-dev').value='';$('f-source').value='';
+    selectedApkFile=null;selectedIconFile=null;selectedEmoji='📦';
+    $('fileChosen').style.display='none';
+    $('iconPreview').innerHTML='<span id="iconEmoji">📦</span>';
+    document.querySelectorAll('.emoji-opt').forEach(b=>b.classList.remove('sel'));
+    setTimeout(()=>goPage('store'),1500);
+  } else {
+    toast('❌ '+(res?.error||'Error al publicar'),'error');
+  }
+}
+
+// ── TOAST ─────────────────────────────────────────
+let toastTimer;
+function toast(msg, type='success') {
+  const icons={success:'✅',error:'❌',info:'ℹ️'};
+  $('t-icon').textContent=icons[type]||'ℹ️';
+  $('t-text').textContent=msg;
+  const el=$('toast2');
+  el.className=`toast2 ${type} show`;
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.classList.remove('show'),3500);
+}
+
+// ── INIT ──────────────────────────────────────────
+function initUploadPage() {
+  // Emoji grid
+  $('emojiGrid').innerHTML = EMOJIS.map(e=>`<div class="emoji-opt${e===selectedEmoji?' sel':''}" onclick="pickEmoji('${e}')">${e}</div>`).join('');
+}
+
+// Init
+initUploadPage();
+loadHome();
+</script>
+</body>
+</html>
