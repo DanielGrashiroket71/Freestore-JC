@@ -1,12 +1,12 @@
 {
   "name": "freestore",
   "version": "1.0.0",
-  "description": "Plataforma libre de APKs",
+  "description": "Plataforma libre de APKs - sin registro, sin costos",
   "main": "server.js",
   "scripts": {
-    "start": "node --experimental-sqlite server.js"
+    "start": "node server.js"
   },
   "engines": {
-    "node": ">=22.0.0"
+    "node": ">=14.0.0"
   }
 }
